@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import com.example.settingmanager.MainActivity;
 
 import android.media.AudioManager;
+import android.media.MediaRouter.VolumeCallback;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -31,13 +33,16 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-
+	int ringVol = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,9 +54,11 @@ public class MainActivity extends Activity {
 		final Switch ringCheckBox = (Switch) findViewById(R.id.switchRing);
 		final Switch vibrateCheckBox = (Switch) findViewById(R.id.switchVibrate);
 		final Switch silentCheckBox = (Switch) findViewById(R.id.switchSilent);
+		final Switch rotateCheckBox = (Switch) findViewById(R.id.switchRotate);
 		final Button createButton = (Button) findViewById(R.id.mainCreate);
 		final Button loadButton = (Button) findViewById(R.id.mainLoad);
 		final EditText settingName = (EditText) findViewById(R.id.name);
+		final SeekBar seekRinger = (SeekBar) findViewById(R.id.seekRinger);
 		final Context context = this;
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner);
 		final Button deleteButton = (Button) findViewById(R.id.delete);
@@ -103,6 +110,15 @@ public class MainActivity extends Activity {
 						vibrateCheckBox.setChecked(true);
 					else if (settings.substring(3,4).equals("2"))
 						silentCheckBox.setChecked(true);
+					else {
+						ringCheckBox.setChecked(false);
+						vibrateCheckBox.setChecked(false);
+						silentCheckBox.setChecked(false);
+					}
+					if(settings.substring(4,5).equals("1"))
+						rotateCheckBox.setChecked(true);
+					else
+						rotateCheckBox.setChecked(false);
 				}
 				catch (Exception e) {
 					
@@ -111,6 +127,23 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {}
+		});
+		
+		seekRinger.setMax(7);
+		seekRinger.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) { }
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {	}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if(!fromUser)
+					return;
+				ringVol = progress;
+			}
 		});
 		
 		vibrateCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -160,6 +193,14 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				File file = new File(context.getFilesDir(), settingName.getText().toString());
 				file.delete();
+				
+				blueToothCheckBox.setChecked(false);
+				wifiCheckBox.setChecked(false);
+				mobileNetworkCheckBox.setChecked(false);
+				ringCheckBox.setChecked(false);
+				vibrateCheckBox.setChecked(false);
+				silentCheckBox.setChecked(false);
+				rotateCheckBox.setChecked(false);
 				
 				spinnerArray.clear();
 				spinnerArray.add("");
@@ -218,10 +259,17 @@ public class MainActivity extends Activity {
 					{
 						settings = settings + "1";
 					}
-					else
+					else if (silentCheckBox.isChecked())
 					{
 						settings = settings + "2";
 					}
+					else
+						settings = settings + "3";
+					if(rotateCheckBox.isChecked())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
+					settings = settings + String.valueOf(ringVol);
 						
 					output_stream.write(settings.getBytes());
 					output_stream.close();
@@ -334,6 +382,7 @@ public class MainActivity extends Activity {
 					if (settings.substring(3,4).equals("0"))
 					{
 						audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+						audiomanager.setStreamVolume(AudioManager.STREAM_RING, Integer.parseInt(settings.substring(5,6)), 0);
 					}
 					else if (settings.substring(3,4).equals("1"))
 					{
@@ -343,6 +392,10 @@ public class MainActivity extends Activity {
 					{
 						audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 					}
+					if(settings.substring(4,5).equals("0"))
+						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+					else
+						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
 						
 					
 				}

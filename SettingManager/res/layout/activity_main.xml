@@ -31,39 +31,6 @@
         android:textColor="@color/white"
         tools:ignore="HardcodedText" />
 
-    <Switch
-        android:id="@+id/switchRing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/switchVibrate"
-        android:layout_below="@+id/switchMobile"
-        android:padding="10dp"
-        android:text="Ring"
-        android:textColor="@color/white"
-        tools:ignore="HardcodedText" />
-
-    <Switch
-        android:id="@+id/switchVibrate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/switchRing"
-        android:padding="10dp"
-        android:text="Vibrate"
-        android:textColor="@color/white"
-        tools:ignore="HardcodedText" />
-
-    <Switch
-        android:id="@+id/switchSilent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/switchVibrate"
-        android:layout_below="@+id/switchVibrate"
-        android:padding="10dp"
-        android:text="Silent"
-        android:textColor="@color/white"
-        tools:ignore="HardcodedText" />
-
     <Button
         android:id="@+id/mainCreate"
         android:layout_width="wrap_content"
@@ -71,8 +38,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:text="Create"
-        tools:ignore="HardcodedText"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
     <Switch
         android:id="@+id/switchWifi"
@@ -82,20 +49,20 @@
         android:layout_below="@+id/name"
         android:padding="10dp"
         android:text="Wifi"
-        tools:ignore="HardcodedText"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
     <EditText
         android:id="@+id/name"
-        android:inputType="text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/switchWifi"
         android:layout_alignRight="@+id/spinner"
         android:layout_alignTop="@+id/spinner"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
+        android:inputType="text"
         android:textColor="@color/white" >
 
         <requestFocus />
@@ -117,7 +84,8 @@
         android:layout_alignBottom="@+id/mainLoad"
         android:layout_centerHorizontal="true"
         android:text="Delete"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/mainLoad"
@@ -128,6 +96,68 @@
         android:layout_alignRight="@+id/switchSilent"
         android:text="Load"
         android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <Switch
+        android:id="@+id/switchSilent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/switchRotate"
+        android:layout_below="@+id/switchRotate"
+        android:padding="10dp"
+        android:text="Silent"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <Switch
+        android:id="@+id/switchRotate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/switchMobile"
+        android:layout_below="@+id/switchMobile"
+        android:padding="10dp"
+        android:text="Auto Rotate"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <Switch
+        android:id="@+id/switchVibrate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/switchSilent"
+        android:layout_below="@+id/switchSilent"
+        android:padding="10dp"
+        android:text="Vibrate"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <Switch
+        android:id="@+id/switchRing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/mainCreate"
+        android:layout_below="@+id/switchVibrate"
+        android:padding="10dp"
+        android:text="Ring"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <SeekBar
+        android:id="@+id/seekRinger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/switchRing"
+        android:layout_toLeftOf="@+id/delete"
+        android:text="Ringer Volume"
+        android:textColor="@color/white"
+        android:textColorHint="@android:color/white"
         tools:ignore="HardcodedText" />
 
 </RelativeLayout>
