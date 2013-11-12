@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -53,6 +54,7 @@ public class MainActivity extends Activity {
 		final EditText settingName = (EditText) findViewById(R.id.name);
 		final Context context = this;
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+		final Button deleteButton = (Button) findViewById(R.id.delete);
 		final ArrayList<String> spinnerArray = new ArrayList<String>();
 		File[] files = context.getFilesDir().listFiles();
 		spinnerArray.add("");
@@ -149,6 +151,26 @@ public class MainActivity extends Activity {
 					if(ringCheckBox.isChecked())
 						ringCheckBox.setChecked(false);
 				}
+			}
+		});
+		
+		deleteButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				File file = new File(context.getFilesDir(), settingName.getText().toString());
+				file.delete();
+				
+				spinnerArray.clear();
+				spinnerArray.add("");
+				File[] files = context.getFilesDir().listFiles();
+				for (File inFile : files) {
+					if (!inFile.isDirectory()) {
+						spinnerArray.add(inFile.getName());
+						Log.d("File", inFile.getName());
+					}
+				}
+				spinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, spinnerArray));
 			}
 		});
 		

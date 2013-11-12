@@ -65,17 +65,6 @@
         tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/mainLoad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/mainCreate"
-        android:layout_alignBottom="@+id/mainCreate"
-        android:layout_alignRight="@+id/switchSilent"
-        android:text="Load"
-        android:textColor="@color/white"
-        tools:ignore="HardcodedText" />
-
-    <Button
         android:id="@+id/mainCreate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -106,7 +95,8 @@
         android:layout_alignTop="@+id/spinner"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        android:ems="10" >
+        android:ems="10"
+        android:textColor="@color/white" >
 
         <requestFocus />
     </EditText>
@@ -118,5 +108,26 @@
         android:layout_alignLeft="@+id/mainLoad"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/switchWifi" />
+
+    <Button
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/mainLoad"
+        android:layout_alignBottom="@+id/mainLoad"
+        android:layout_centerHorizontal="true"
+        android:text="Delete"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/mainLoad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/mainCreate"
+        android:layout_alignBottom="@+id/mainCreate"
+        android:layout_alignRight="@+id/switchSilent"
+        android:text="Load"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
 </RelativeLayout>
