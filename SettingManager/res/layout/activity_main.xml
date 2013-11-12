@@ -2,91 +2,121 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <CheckBox
-        android:id="@+id/ringCheckbox"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switchBluetooth"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/checkBox2"
-        android:layout_centerVertical="true"
-        android:text="Ring" />
+        android:layout_alignLeft="@+id/switchRing"
+        android:layout_below="@+id/switchWifi"
+        android:padding="10dp"
+        android:text="Bluetooth"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
-    <CheckBox
-        android:id="@+id/mobileNetworkCheckBox"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switchMobile"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/wifiCheckbox"
-        android:layout_alignBottom="@+id/wifiCheckbox"
-        android:layout_alignParentRight="true"
-        android:text="Mobile Network" />
+        android:layout_alignLeft="@+id/switchBluetooth"
+        android:layout_below="@+id/switchBluetooth"
+        android:padding="10dp"
+        android:text="Mobile"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
-    <CheckBox
-        android:id="@+id/vibrateCheckbox"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switchRing"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Vibrate" />
+        android:layout_alignLeft="@+id/switchVibrate"
+        android:layout_below="@+id/switchMobile"
+        android:padding="10dp"
+        android:text="Ring"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
-    <CheckBox
-        android:id="@+id/silentCheckbox"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switchVibrate"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/vibrateCheckbox"
-        android:layout_alignBottom="@+id/vibrateCheckbox"
-        android:layout_alignRight="@+id/mobileNetworkCheckBox"
-        android:text="Silent" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/switchRing"
+        android:padding="10dp"
+        android:text="Vibrate"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
-    <CheckBox
-        android:id="@+id/bluetoothCheckbox"
-        android:layout_width="wrap_content"
+    <Switch
+        android:id="@+id/switchSilent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/vibrateCheckbox"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="55dp"
-        android:text="Bluetooth" />
-
-    <CheckBox
-        android:id="@+id/wifiCheckbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/ringCheckbox"
-        android:layout_below="@+id/ringCheckbox"
-        android:layout_marginTop="30dp"
-        android:text="Wifi" />
-
-    <EditText
-        android:id="@+id/settingNameEditText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="44dp"
-        android:ems="10" />
+        android:layout_alignLeft="@+id/switchVibrate"
+        android:layout_below="@+id/switchVibrate"
+        android:padding="10dp"
+        android:text="Silent"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
     <Button
-        android:id="@+id/createButton"
-        style="?android:attr/buttonStyleSmall"
+        android:id="@+id/mainLoad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/mainCreate"
+        android:layout_alignBottom="@+id/mainCreate"
+        android:layout_alignRight="@+id/switchSilent"
+        android:text="Load"
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/mainCreate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:text="Create" />
+        android:layout_alignParentLeft="true"
+        android:text="Create"
+        tools:ignore="HardcodedText"
+        android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/loadButton"
-        style="?android:attr/buttonStyleSmall"
+    <Switch
+        android:id="@+id/switchWifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/switchBluetooth"
+        android:layout_below="@+id/name"
+        android:padding="10dp"
+        android:text="Wifi"
+        tools:ignore="HardcodedText"
+        android:textColor="@color/white" />
+
+    <EditText
+        android:id="@+id/name"
+        android:inputType="text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/createButton"
-        android:layout_alignBottom="@+id/createButton"
-        android:layout_alignLeft="@+id/silentCheckbox"
-        android:text="Load" />
+        android:layout_alignLeft="@+id/switchWifi"
+        android:layout_alignRight="@+id/spinner"
+        android:layout_alignTop="@+id/spinner"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/mainLoad"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/switchWifi" />
 
 </RelativeLayout>
