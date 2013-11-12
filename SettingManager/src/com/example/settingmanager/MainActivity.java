@@ -119,6 +119,7 @@ public class MainActivity extends Activity {
 						rotateCheckBox.setChecked(true);
 					else
 						rotateCheckBox.setChecked(false);
+					seekRinger.setProgress(Integer.parseInt(settings.substring(5,6)));
 				}
 				catch (Exception e) {
 					
@@ -130,6 +131,7 @@ public class MainActivity extends Activity {
 		});
 		
 		seekRinger.setMax(7);
+		seekRinger.setEnabled(false);
 		seekRinger.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -169,7 +171,10 @@ public class MainActivity extends Activity {
 						vibrateCheckBox.setChecked(false);
 					if(silentCheckBox.isChecked())
 						silentCheckBox.setChecked(false);
+					seekRinger.setEnabled(true);
 				}
+				else
+					seekRinger.setEnabled(false);
 			}
 		});
 		
@@ -269,7 +274,10 @@ public class MainActivity extends Activity {
 						settings = settings + "1";
 					else
 						settings = settings + "0";
-					settings = settings + String.valueOf(ringVol);
+					if(seekRinger.isEnabled())
+						settings = settings + String.valueOf(ringVol);
+					else
+						settings = settings + 0;
 						
 					output_stream.write(settings.getBytes());
 					output_stream.close();
