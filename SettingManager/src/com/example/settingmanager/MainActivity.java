@@ -41,7 +41,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-	int ringVol = 0;
+	int ringVol = 0, mediaVol = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +55,19 @@ public class MainActivity extends Activity {
 		final Switch vibrateCheckBox = (Switch) findViewById(R.id.switchVibrate);
 		final Switch silentCheckBox = (Switch) findViewById(R.id.switchSilent);
 		final Switch rotateCheckBox = (Switch) findViewById(R.id.switchRotate);
+		final Switch mediaSwitch = (Switch) findViewById(R.id.Media);
 		final Button createButton = (Button) findViewById(R.id.mainCreate);
 		final Button loadButton = (Button) findViewById(R.id.mainLoad);
 		final EditText settingName = (EditText) findViewById(R.id.name);
 		final SeekBar seekRinger = (SeekBar) findViewById(R.id.seekRinger);
+		final SeekBar seekMedia = (SeekBar) findViewById(R.id.seekMedia);
+		final TextView ringerText = (TextView) findViewById(R.id.ringerText);
+		final TextView mediaText = (TextView) findViewById(R.id.mediaText);
 		final Context context = this;
 		final Spinner spinner = (Spinner) findViewById(R.id.spinner);
 		final Button deleteButton = (Button) findViewById(R.id.delete);
 		final ArrayList<String> spinnerArray = new ArrayList<String>();
+		
 		File[] files = context.getFilesDir().listFiles();
 		spinnerArray.add("");
 		for (File file : files) {
@@ -120,6 +125,13 @@ public class MainActivity extends Activity {
 					else
 						rotateCheckBox.setChecked(false);
 					seekRinger.setProgress(Integer.parseInt(settings.substring(5,6)));
+					ringerText.setText("Ringer Volume = " + settings.substring(5,6));
+					if(settings.substring(6,7).equals("1"))
+						mediaSwitch.setEnabled(true);
+					else
+						mediaSwitch.setEnabled(false);
+					seekMedia.setProgress(Integer.parseInt(settings.substring(7,8)));
+					mediaText.setText("Media Volume = " + settings.substring(7,8));
 				}
 				catch (Exception e) {
 					
@@ -145,6 +157,41 @@ public class MainActivity extends Activity {
 				if(!fromUser)
 					return;
 				ringVol = progress;
+				ringerText.setText("Ringer Volume = " + ringVol);
+			}
+		});
+		
+		seekMedia.setMax(7);
+		seekMedia.setEnabled(false);
+		seekMedia.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) { }
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {	}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if(!fromUser)
+					return;
+				mediaVol = progress;
+				mediaText.setText("Media Volume = " + mediaVol);
+			}
+		});
+		
+		mediaSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+					seekMedia.setEnabled(true);
+				else
+				{
+					mediaText.setText("Media Volume");
+					seekMedia.setProgress(0);
+					seekMedia.setEnabled(false);
+				}
 			}
 		});
 		
@@ -174,7 +221,11 @@ public class MainActivity extends Activity {
 					seekRinger.setEnabled(true);
 				}
 				else
+				{
+					ringerText.setText("Ringer Volume");
+					seekRinger.setProgress(0);
 					seekRinger.setEnabled(false);
+				}
 			}
 		});
 		
@@ -278,6 +329,11 @@ public class MainActivity extends Activity {
 						settings = settings + String.valueOf(ringVol);
 					else
 						settings = settings + 0;
+					if(mediaSwitch.isEnabled())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
+					settings = settings + String.valueOf(mediaVol);
 						
 					output_stream.write(settings.getBytes());
 					output_stream.close();
@@ -404,8 +460,8 @@ public class MainActivity extends Activity {
 						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
 					else
 						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
-						
-					
+					if (settings.substring(6,7).equals("1"))
+						audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(settings.substring(7,8)), 0);						
 				}
 				catch (Exception e)
 				{
