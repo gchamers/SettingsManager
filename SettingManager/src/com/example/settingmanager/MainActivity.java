@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -16,13 +17,29 @@ import android.media.MediaRouter.VolumeCallback;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.AvoidXfermode.Mode;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -34,6 +51,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -58,31 +76,43 @@ public class MainActivity extends Activity {
 		final Switch mediaSwitch = (Switch) findViewById(R.id.Media);
 		final Button createButton = (Button) findViewById(R.id.mainCreate);
 		final Button loadButton = (Button) findViewById(R.id.mainLoad);
-		final EditText settingName = (EditText) findViewById(R.id.name);
+		final AutoCompleteTextView settingName = (AutoCompleteTextView) findViewById(R.id.name);
 		final SeekBar seekRinger = (SeekBar) findViewById(R.id.seekRinger);
 		final SeekBar seekMedia = (SeekBar) findViewById(R.id.seekMedia);
 		final TextView ringerText = (TextView) findViewById(R.id.ringerText);
 		final TextView mediaText = (TextView) findViewById(R.id.mediaText);
 		final Context context = this;
-		final Spinner spinner = (Spinner) findViewById(R.id.spinner);
 		final Button deleteButton = (Button) findViewById(R.id.delete);
 		final ArrayList<String> spinnerArray = new ArrayList<String>();
 		
+		final ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+		
+		createButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		loadButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		deleteButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		
 		File[] files = context.getFilesDir().listFiles();
-		spinnerArray.add("");
 		for (File file : files) {
 			if (!file.isDirectory()) {
 				spinnerArray.add(file.getName());
 				Log.d("File", file.getName());
 			}
 		}
-		spinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, spinnerArray));
-		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+		settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
+		settingName.setThreshold(0);
+		settingName.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				settingName.showDropDown();
+			}
+		});
+		settingName.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView)arg1).setText(null);
-				settingName.setText(spinner.getItemAtPosition(arg2).toString());
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				Log.d("Load", "Visualizing Settings...");
+				Toast.makeText(getApplicationContext(), "Visualizing Settings...", 5);
 				//visualize settings
 				try {
 					FileInputStream input_stream = openFileInput(settingName.getText().toString());
@@ -134,13 +164,27 @@ public class MainActivity extends Activity {
 					mediaText.setText("Media Volume = " + settings.substring(7,8));
 				}
 				catch (Exception e) {
-					
+					Log.e("Load", "Error loading settings");
 				}
+				
 			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {}
 		});
+		/*
+		File f = new File(Environment.getExternalStorageDirectory(), "1.jpg");
+		String path = f.getAbsolutePath();
+		File f1 = new File(path);
+
+		if(f1.exists()) {
+		    Bitmap bmp = BitmapFactory.decodeFile(path);
+		    BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+		    WallpaperManager m=WallpaperManager.getInstance(this);
+
+		    try {
+		        m.setBitmap(bmp);
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		} */
 		
 		seekRinger.setMax(7);
 		seekRinger.setEnabled(false);
@@ -258,8 +302,9 @@ public class MainActivity extends Activity {
 				silentCheckBox.setChecked(false);
 				rotateCheckBox.setChecked(false);
 				
+				settingName.setText("");
+				
 				spinnerArray.clear();
-				spinnerArray.add("");
 				File[] files = context.getFilesDir().listFiles();
 				for (File inFile : files) {
 					if (!inFile.isDirectory()) {
@@ -267,7 +312,7 @@ public class MainActivity extends Activity {
 						Log.d("File", inFile.getName());
 					}
 				}
-				spinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, spinnerArray));
+				settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
 			}
 		});
 		
@@ -339,7 +384,6 @@ public class MainActivity extends Activity {
 					output_stream.close();
 					
 					spinnerArray.clear();
-					spinnerArray.add("");
 					File[] files = context.getFilesDir().listFiles();
 					for (File inFile : files) {
 						if (!inFile.isDirectory()) {
@@ -347,7 +391,7 @@ public class MainActivity extends Activity {
 							Log.d("File", inFile.getName());
 						}
 					}
-					spinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, spinnerArray));
+					settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
 				}
 				catch (Exception e)
 				{
@@ -494,12 +538,50 @@ public class MainActivity extends Activity {
 				editor.commit();
 			}
 		});
+	
+		//!-------------------------start ongoing notifications-------------------------!//
+		//Load with no active profile, if user selects one or hits one of the cycle buttons, flip it.
+		Intent intent = new Intent(this, MainActivity.class);
+		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+		Notification n  = new Notification.Builder(this)
+		        .setContentTitle("Active Profile:")				//Header
+		        .setContentText("")								//Subtitle
+		        .setSmallIcon(R.drawable.logo)					//Icon
+		        .setContentIntent(pIntent)						//Inent that we kick to when clicked
+		        .setAutoCancel(true)							//Dismiss if tapped
+		        .addAction(R.drawable.logo, "toggle", pIntent)	//Buttons
+		        .build();
+		    
+		  
+		NotificationManager notificationManager = 
+		  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+		notificationManager.notify(0, n);
+		//!--------------------------end ongoing notifications--------------------------!//
+		
+		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId())
+		{
+			case R.id.back:
+				Intent i = new Intent(getApplicationContext(), FrontPage.class);
+				startActivity(i);
+				finish();
+				break;
+			default:
+				break;
+		}
 		return true;
 	}
 }
