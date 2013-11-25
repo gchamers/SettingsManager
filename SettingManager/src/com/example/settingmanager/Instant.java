@@ -27,6 +27,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//airplane mode
+
 public class Instant extends Activity {
 	boolean userChangeVol = false, userChangeVib = false, visualize = false;
 	

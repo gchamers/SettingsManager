@@ -26,4 +26,35 @@
         android:text="Profiles" 
         android:layout_alignParentBottom="true"/>
 
+    <TextView
+        android:id="@+id/favoritesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/imageView1"
+        android:layout_marginLeft="30dp"
+        android:text="Favorites"
+        android:textColor="@color/Gray" />
+
+    <ScrollView
+        android:id="@+id/favoritesScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/quick"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/favoritesText"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp" >
+
+        <LinearLayout
+            android:id="@+id/favoritesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+        </LinearLayout>
+    </ScrollView>
+
 </RelativeLayout>

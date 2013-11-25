@@ -48,6 +48,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -84,6 +85,7 @@ public class MainActivity extends Activity {
 		final Context context = this;
 		final Button deleteButton = (Button) findViewById(R.id.delete);
 		final ArrayList<String> spinnerArray = new ArrayList<String>();
+		final CheckBox favorite = (CheckBox) findViewById(R.id.checkFav);
 		
 		final ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE); 
 		
@@ -111,8 +113,12 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				Log.d("Load", "Visualizing Settings...");
-				Toast.makeText(getApplicationContext(), "Visualizing Settings...", 5);
+				
+				seekRinger.setEnabled(false);
+				seekRinger.setMax(7);
+				seekMedia.setEnabled(false);
+				seekMedia.setMax(7);
+				
 				//visualize settings
 				try {
 					FileInputStream input_stream = openFileInput(settingName.getText().toString());
@@ -140,12 +146,28 @@ public class MainActivity extends Activity {
 					else
 						mobileNetworkCheckBox.setChecked(false);
 					if (settings.substring(3,4).equals("0"))
+					{
 						ringCheckBox.setChecked(true);
+						vibrateCheckBox.setChecked(false);
+						silentCheckBox.setChecked(false);
+						seekRinger.setEnabled(true);
+						seekRinger.setProgress(Integer.parseInt(settings.substring(5,6)));
+						ringerText.setText("Ringer Volume = " + settings.substring(5,6));
+					}
 					else if (settings.substring(3,4).equals("1"))
+					{
+						ringCheckBox.setChecked(false);
 						vibrateCheckBox.setChecked(true);
+						silentCheckBox.setChecked(false);
+					}
 					else if (settings.substring(3,4).equals("2"))
+					{
+						ringCheckBox.setChecked(false);
+						vibrateCheckBox.setChecked(false);
 						silentCheckBox.setChecked(true);
-					else {
+					}
+					else 
+					{
 						ringCheckBox.setChecked(false);
 						vibrateCheckBox.setChecked(false);
 						silentCheckBox.setChecked(false);
@@ -154,14 +176,22 @@ public class MainActivity extends Activity {
 						rotateCheckBox.setChecked(true);
 					else
 						rotateCheckBox.setChecked(false);
-					seekRinger.setProgress(Integer.parseInt(settings.substring(5,6)));
-					ringerText.setText("Ringer Volume = " + settings.substring(5,6));
 					if(settings.substring(6,7).equals("1"))
-						mediaSwitch.setEnabled(true);
+					{
+						mediaSwitch.setChecked(true);
+						seekMedia.setEnabled(true);
+						seekMedia.setProgress(Integer.parseInt(settings.substring(7,8)));
+						mediaText.setText("Media Volume = " + settings.substring(7,8));
+					}
 					else
-						mediaSwitch.setEnabled(false);
-					seekMedia.setProgress(Integer.parseInt(settings.substring(7,8)));
-					mediaText.setText("Media Volume = " + settings.substring(7,8));
+					{
+						mediaSwitch.setChecked(false);
+					}
+					Log.d("FrontPage", settings.substring(8, 9));
+					if(settings.substring(8,9).equals("1"))
+						favorite.setChecked(true);
+					else
+						favorite.setChecked(false);
 				}
 				catch (Exception e) {
 					Log.e("Load", "Error loading settings");
@@ -186,8 +216,6 @@ public class MainActivity extends Activity {
 		    }
 		} */
 		
-		seekRinger.setMax(7);
-		seekRinger.setEnabled(false);
 		seekRinger.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -205,8 +233,6 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		seekMedia.setMax(7);
-		seekMedia.setEnabled(false);
 		seekMedia.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -379,7 +405,10 @@ public class MainActivity extends Activity {
 					else
 						settings = settings + "0";
 					settings = settings + String.valueOf(mediaVol);
-						
+					if(favorite.isChecked())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
 					output_stream.write(settings.getBytes());
 					output_stream.close();
 					
@@ -537,30 +566,7 @@ public class MainActivity extends Activity {
 				editor.putBoolean("silent", silentCheckBox.isChecked());
 				editor.commit();
 			}
-		});
-	
-		//!-------------------------start ongoing notifications-------------------------!//
-		//Load with no active profile, if user selects one or hits one of the cycle buttons, flip it.
-		Intent intent = new Intent(this, MainActivity.class);
-		PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-		Notification n  = new Notification.Builder(this)
-		        .setContentTitle("Active Profile:")				//Header
-		        .setContentText("")								//Subtitle
-		        .setSmallIcon(R.drawable.logo)					//Icon
-		        .setContentIntent(pIntent)						//Inent that we kick to when clicked
-		        .setAutoCancel(true)							//Dismiss if tapped
-		        .addAction(R.drawable.logo, "toggle", pIntent)	//Buttons
-		        .build();
-		    
-		  
-		NotificationManager notificationManager = 
-		  (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-		notificationManager.notify(0, n);
-		//!--------------------------end ongoing notifications--------------------------!//
-		
-		
+		});		
 	}
 
 	@Override
