@@ -4,51 +4,343 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import com.example.settingmanager.MainActivity;
 
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.AudioManager;
+import android.media.MediaRouter.VolumeCallback;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
+import android.graphics.AvoidXfermode.Mode;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.Toast;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
-
+	int ringVol = 0, mediaVol = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		final CheckBox wifiCheckBox = (CheckBox) findViewById(R.id.wifiCheckbox);
-		final CheckBox blueToothCheckBox = (CheckBox) findViewById(R.id.bluetoothCheckbox);
-		final CheckBox mobileNetworkCheckBox = (CheckBox) findViewById(R.id.mobileNetworkCheckBox);
-		final CheckBox ringCheckBox = (CheckBox) findViewById(R.id.ringCheckbox);
-		final CheckBox vibrateCheckBox = (CheckBox) findViewById(R.id.vibrateCheckbox);
-		final CheckBox silentCheckBox = (CheckBox) findViewById(R.id.silentCheckbox);
-		final Button createButton = (Button) findViewById(R.id.createButton);
-		final Button loadButton = (Button) findViewById(R.id.loadButton);
-		final EditText settingName = (EditText) findViewById(R.id.settingNameEditText);
+		
+		final Switch wifiCheckBox = (Switch) findViewById(R.id.switchWifi);
+		final Switch blueToothCheckBox = (Switch) findViewById(R.id.switchBluetooth);
+		final Switch mobileNetworkCheckBox = (Switch) findViewById(R.id.switchMobile);
+		final Switch ringCheckBox = (Switch) findViewById(R.id.switchRing);
+		final Switch vibrateCheckBox = (Switch) findViewById(R.id.switchVibrate);
+		final Switch silentCheckBox = (Switch) findViewById(R.id.switchSilent);
+		final Switch rotateCheckBox = (Switch) findViewById(R.id.switchRotate);
+		final Switch mediaSwitch = (Switch) findViewById(R.id.Media);
+		final Button createButton = (Button) findViewById(R.id.mainCreate);
+		final Button loadButton = (Button) findViewById(R.id.mainLoad);
+		final AutoCompleteTextView settingName = (AutoCompleteTextView) findViewById(R.id.name);
+		final SeekBar seekRinger = (SeekBar) findViewById(R.id.seekRinger);
+		final SeekBar seekMedia = (SeekBar) findViewById(R.id.seekMedia);
+		final TextView ringerText = (TextView) findViewById(R.id.ringerText);
+		final TextView mediaText = (TextView) findViewById(R.id.mediaText);
 		final Context context = this;
+		final Button deleteButton = (Button) findViewById(R.id.delete);
+		final ArrayList<String> spinnerArray = new ArrayList<String>();
+		final CheckBox favorite = (CheckBox) findViewById(R.id.checkFav);
+		
+		final ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+		
+		createButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		loadButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		deleteButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		
+		File[] files = context.getFilesDir().listFiles();
+		for (File file : files) {
+			if (!file.isDirectory()) {
+				spinnerArray.add(file.getName());
+				Log.d("File", file.getName());
+			}
+		}
+		settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
+		settingName.setThreshold(0);
+		settingName.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				settingName.showDropDown();
+			}
+		});
+		settingName.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				
+				seekRinger.setEnabled(false);
+				seekRinger.setMax(7);
+				seekMedia.setEnabled(false);
+				seekMedia.setMax(7);
+				
+				//visualize settings
+				try {
+					FileInputStream input_stream = openFileInput(settingName.getText().toString());
+					InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
+					BufferedReader buffered_reader = new BufferedReader(input_stream_reader);
+					String received = "";
+					StringBuilder string_builder = new StringBuilder();
+					while ((received = buffered_reader.readLine()) != null)
+						string_builder.append(received);
+					input_stream.close();
+					String settings = string_builder.toString();
+					//Will change the BlueTooth settings
+					if (settings.substring(0, 1).equals("1"))
+						blueToothCheckBox.setChecked(true);
+					else
+						blueToothCheckBox.setChecked(false);
+					//Will change the WiFi settings
+					if (settings.substring(1,2).equals("1"))
+						wifiCheckBox.setChecked(true);
+					else
+						wifiCheckBox.setChecked(false);
+					//Will change the 3G settings
+					if (settings.substring(2,3).equals("1"))
+						mobileNetworkCheckBox.setChecked(true);
+					else
+						mobileNetworkCheckBox.setChecked(false);
+					if (settings.substring(3,4).equals("0"))
+					{
+						ringCheckBox.setChecked(true);
+						vibrateCheckBox.setChecked(false);
+						silentCheckBox.setChecked(false);
+						seekRinger.setEnabled(true);
+						seekRinger.setProgress(Integer.parseInt(settings.substring(5,6)));
+						ringerText.setText("Ringer Volume = " + settings.substring(5,6));
+					}
+					else if (settings.substring(3,4).equals("1"))
+					{
+						ringCheckBox.setChecked(false);
+						vibrateCheckBox.setChecked(true);
+						silentCheckBox.setChecked(false);
+					}
+					else if (settings.substring(3,4).equals("2"))
+					{
+						ringCheckBox.setChecked(false);
+						vibrateCheckBox.setChecked(false);
+						silentCheckBox.setChecked(true);
+					}
+					else 
+					{
+						ringCheckBox.setChecked(false);
+						vibrateCheckBox.setChecked(false);
+						silentCheckBox.setChecked(false);
+					}
+					if(settings.substring(4,5).equals("1"))
+						rotateCheckBox.setChecked(true);
+					else
+						rotateCheckBox.setChecked(false);
+					if(settings.substring(6,7).equals("1"))
+					{
+						mediaSwitch.setChecked(true);
+						seekMedia.setEnabled(true);
+						seekMedia.setProgress(Integer.parseInt(settings.substring(7,8)));
+						mediaText.setText("Media Volume = " + settings.substring(7,8));
+					}
+					else
+					{
+						mediaSwitch.setChecked(false);
+					}
+					Log.d("FrontPage", settings.substring(8, 9));
+					if(settings.substring(8,9).equals("1"))
+						favorite.setChecked(true);
+					else
+						favorite.setChecked(false);
+				}
+				catch (Exception e) {
+					Log.e("Load", "Error loading settings");
+				}
+				
+			}
+		});
+		/*
+		File f = new File(Environment.getExternalStorageDirectory(), "1.jpg");
+		String path = f.getAbsolutePath();
+		File f1 = new File(path);
+
+		if(f1.exists()) {
+		    Bitmap bmp = BitmapFactory.decodeFile(path);
+		    BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
+		    WallpaperManager m=WallpaperManager.getInstance(this);
+
+		    try {
+		        m.setBitmap(bmp);
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
+		} */
+		
+		seekRinger.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) { }
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {	}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if(!fromUser)
+					return;
+				ringVol = progress;
+				ringerText.setText("Ringer Volume = " + ringVol);
+			}
+		});
+		
+		seekMedia.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) { }
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {	}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if(!fromUser)
+					return;
+				mediaVol = progress;
+				mediaText.setText("Media Volume = " + mediaVol);
+			}
+		});
+		
+		mediaSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+					seekMedia.setEnabled(true);
+				else
+				{
+					mediaText.setText("Media Volume");
+					seekMedia.setProgress(0);
+					seekMedia.setEnabled(false);
+				}
+			}
+		});
+		
+		vibrateCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+				{
+					if(silentCheckBox.isChecked())
+						silentCheckBox.setChecked(false);
+					if(ringCheckBox.isChecked())
+						ringCheckBox.setChecked(false);
+				}
+			}
+		});
+		ringCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+				{
+					if(vibrateCheckBox.isChecked())
+						vibrateCheckBox.setChecked(false);
+					if(silentCheckBox.isChecked())
+						silentCheckBox.setChecked(false);
+					seekRinger.setEnabled(true);
+				}
+				else
+				{
+					ringerText.setText("Ringer Volume");
+					seekRinger.setProgress(0);
+					seekRinger.setEnabled(false);
+				}
+			}
+		});
+		
+		silentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+				{
+					if(vibrateCheckBox.isChecked())
+						vibrateCheckBox.setChecked(false);
+					if(ringCheckBox.isChecked())
+						ringCheckBox.setChecked(false);
+				}
+			}
+		});
+		
+		deleteButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				File file = new File(context.getFilesDir(), settingName.getText().toString());
+				file.delete();
+				
+				blueToothCheckBox.setChecked(false);
+				wifiCheckBox.setChecked(false);
+				mobileNetworkCheckBox.setChecked(false);
+				ringCheckBox.setChecked(false);
+				vibrateCheckBox.setChecked(false);
+				silentCheckBox.setChecked(false);
+				rotateCheckBox.setChecked(false);
+				
+				settingName.setText("");
+				
+				spinnerArray.clear();
+				File[] files = context.getFilesDir().listFiles();
+				for (File inFile : files) {
+					if (!inFile.isDirectory()) {
+						spinnerArray.add(inFile.getName());
+						Log.d("File", inFile.getName());
+					}
+				}
+				settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
+			}
+		});
 		
 		createButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -94,13 +386,41 @@ public class MainActivity extends Activity {
 					{
 						settings = settings + "1";
 					}
-					else
+					else if (silentCheckBox.isChecked())
 					{
 						settings = settings + "2";
 					}
-						
+					else
+						settings = settings + "3";
+					if(rotateCheckBox.isChecked())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
+					if(seekRinger.isEnabled())
+						settings = settings + String.valueOf(ringVol);
+					else
+						settings = settings + 0;
+					if(mediaSwitch.isEnabled())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
+					settings = settings + String.valueOf(mediaVol);
+					if(favorite.isChecked())
+						settings = settings + "1";
+					else
+						settings = settings + "0";
 					output_stream.write(settings.getBytes());
 					output_stream.close();
+					
+					spinnerArray.clear();
+					File[] files = context.getFilesDir().listFiles();
+					for (File inFile : files) {
+						if (!inFile.isDirectory()) {
+							spinnerArray.add(inFile.getName());
+							Log.d("File", inFile.getName());
+						}
+					}
+					settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
 				}
 				catch (Exception e)
 				{
@@ -114,17 +434,11 @@ public class MainActivity extends Activity {
 				
 			@Override
 			public void onClick(View v) {
-                AudioManager audiomanager =(AudioManager)MainActivity.this.getSystemService(Context.AUDIO_SERVICE);
-            	BluetoothAdapter blueTooth = BluetoothAdapter.getDefaultAdapter();  
+				AudioManager audiomanager =(AudioManager)MainActivity.this.getSystemService(Context.AUDIO_SERVICE);
+				BluetoothAdapter blueTooth = BluetoothAdapter.getDefaultAdapter();  
 				WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                String settings = "";
-                Boolean bluetoothState = false;
-                Boolean wifiState = false;
-                Boolean mobileNetworkState = false;
-                Boolean ringState = false;
-                Boolean vibrateState = false;
-                Boolean silentState = false;
-                
+				String settings = "";
+				
 				//File file = new File(context.getFilesDir(), settingName.getText().toString());
 				//String temp_string = "testing 1 2 3";
 				//FileOutputStream output_stream;
@@ -165,10 +479,10 @@ public class MainActivity extends Activity {
 					{
 						wifi.setWifiEnabled(false);
 					}
-	                //Will change the 3G settings
+					//Will change the 3G settings
 					if (settings.substring(2,3).equals("1"))
 					{
-		            	try
+						try
 						{		
 							 ConnectivityManager conman = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);   							   
 							 Class conmanClass = Class.forName(conman.getClass().getName());   
@@ -186,7 +500,7 @@ public class MainActivity extends Activity {
 					}
 					else
 					{
-		            	try
+						try
 						{		
 							 ConnectivityManager conman = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);   							   
 							 Class conmanClass = Class.forName(conman.getClass().getName());   
@@ -205,6 +519,7 @@ public class MainActivity extends Activity {
 					if (settings.substring(3,4).equals("0"))
 					{
 						audiomanager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+						audiomanager.setStreamVolume(AudioManager.STREAM_RING, Integer.parseInt(settings.substring(5,6)), 0);
 					}
 					else if (settings.substring(3,4).equals("1"))
 					{
@@ -214,46 +529,44 @@ public class MainActivity extends Activity {
 					{
 						audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 					}
-					
+					if(settings.substring(4,5).equals("0"))
+						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0);
+					else
+						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
+					if (settings.substring(6,7).equals("1"))
+						audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(settings.substring(7,8)), 0);						
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-                
-                /*
-                String filename = settingName.getText().toString();
-                FileOutputStream outputStream;
-                try
-                {
-                	outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                	outputStream.write("hello".getBytes());
-                	outputStream.close();
-                }
-                catch (Exception e)
-                {
-                	
-                }
-                */
-                
-        		SharedPreferences sharedPref = getSharedPreferences("settings", 0);
-        		SharedPreferences.Editor editor = sharedPref.edit();
-        		editor.putBoolean("wifi", wifiCheckBox.isChecked());
-        		editor.putBoolean("bluetooth", blueToothCheckBox.isChecked());
-        		editor.putBoolean("mobile", mobileNetworkCheckBox.isChecked());
-        		editor.putBoolean("ring", ringCheckBox.isChecked());
-        		editor.putBoolean("vibrate", vibrateCheckBox.isChecked());
-        		editor.putBoolean("silent", silentCheckBox.isChecked());
-        		editor.commit();
-        		
-        		Boolean wifiTemp = sharedPref.getBoolean("wifi", false);
-        		Boolean bluetooth = sharedPref.getBoolean("bluetooth", false);
-        		Boolean mobile = sharedPref.getBoolean("mobile", false);
-        		Boolean ring = sharedPref.getBoolean("ring", false);
-        		Boolean vibrate = sharedPref.getBoolean("vibrate", false);
-        		Boolean silent = sharedPref.getBoolean("silent", false);
+				
+				/*
+				String filename = settingName.getText().toString();
+				FileOutputStream outputStream;
+				try
+				{
+					outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+					outputStream.write("hello".getBytes());
+					outputStream.close();
+				}
+				catch (Exception e)
+				{
+					
+				}
+				*/
+				
+				SharedPreferences sharedPref = getSharedPreferences("settings", 0);
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putBoolean("wifi", wifiCheckBox.isChecked());
+				editor.putBoolean("bluetooth", blueToothCheckBox.isChecked());
+				editor.putBoolean("mobile", mobileNetworkCheckBox.isChecked());
+				editor.putBoolean("ring", ringCheckBox.isChecked());
+				editor.putBoolean("vibrate", vibrateCheckBox.isChecked());
+				editor.putBoolean("silent", silentCheckBox.isChecked());
+				editor.commit();
 			}
-		});
+		});		
 	}
 
 	@Override
@@ -262,5 +575,19 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId())
+		{
+			case R.id.back:
+				Intent i = new Intent(getApplicationContext(), FrontPage.class);
+				startActivity(i);
+				finish();
+				break;
+			default:
+				break;
+		}
+		return true;
+	}
 }

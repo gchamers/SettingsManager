@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    xmlns:app="http://schemas.android.com/tools"
+    android:background="@color/black">
+
+    <ScrollView
+        android:id="@+id/favoritesScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:padding="10dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <Switch
+                android:id="@+id/switchWifi"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Wifi"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <Switch
+                android:id="@+id/switchBluetooth"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Bluetooth"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <Switch
+                android:id="@+id/switchMobile"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Mobile"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <Switch
+                android:id="@+id/switchRotate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Auto Rotate"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <Switch
+                android:id="@+id/switchVibrate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Vibrate"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <Switch
+                android:id="@+id/switchRing"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Ring"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/ringerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="Ringer Volume"
+                android:textColor="@color/white"
+                android:textColorHint="@android:color/white"
+                app:ignore="HardcodedText" />
+
+            <SeekBar
+                android:id="@+id/seekRinger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp" />
+
+            <Switch
+                android:id="@+id/Media"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Media"
+                android:textColor="@color/white"
+                app:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/mediaText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:text="Media Volume"
+                android:textColor="@color/white"
+                android:textColorHint="@android:color/white"
+                app:ignore="HardcodedText" />
+
+            <SeekBar
+                android:id="@+id/seekMedia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
