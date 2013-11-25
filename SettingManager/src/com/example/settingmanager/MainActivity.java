@@ -60,7 +60,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-	int ringVol = 0, mediaVol = 0;
+	int ringVol = 0, mediaVol = 0, favCount = 0;
+	boolean isVisualize = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,28 +98,51 @@ public class MainActivity extends Activity {
 		for (File file : files) {
 			if (!file.isDirectory()) {
 				spinnerArray.add(file.getName());
+				try {
+					FileInputStream input_stream = openFileInput(file.getName());
+					InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
+					BufferedReader buffered_reader = new BufferedReader(input_stream_reader);
+					String received = "";
+					StringBuilder string_builder = new StringBuilder();
+					while ((received = buffered_reader.readLine()) != null)
+					{
+						string_builder.append(received);
+					}
+					input_stream.close();
+					String settings = string_builder.toString();
+					if(settings.substring(8, 9).equals("1"))
+						favCount++;
+				} catch (Exception e) {}
+				
 				Log.d("File", file.getName());
 			}
 		}
 		settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
 		settingName.setThreshold(0);
 		settingName.setOnClickListener(new OnClickListener() {
-			
 			@Override
 			public void onClick(View v) {
 				settingName.showDropDown();
+			}
+		});
+		settingName.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) { }
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				if(!isVisualize)
+					favorite.setChecked(false);
 			}
 		});
 		settingName.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				
-				seekRinger.setEnabled(false);
-				seekRinger.setMax(7);
-				seekMedia.setEnabled(false);
-				seekMedia.setMax(7);
-				
 				//visualize settings
 				try {
 					FileInputStream input_stream = openFileInput(settingName.getText().toString());
@@ -130,6 +154,7 @@ public class MainActivity extends Activity {
 						string_builder.append(received);
 					input_stream.close();
 					String settings = string_builder.toString();
+					isVisualize = true;
 					//Will change the BlueTooth settings
 					if (settings.substring(0, 1).equals("1"))
 						blueToothCheckBox.setChecked(true);
@@ -184,19 +209,32 @@ public class MainActivity extends Activity {
 						mediaText.setText("Media Volume = " + settings.substring(7,8));
 					}
 					else
-					{
 						mediaSwitch.setChecked(false);
-					}
-					Log.d("FrontPage", settings.substring(8, 9));
 					if(settings.substring(8,9).equals("1"))
 						favorite.setChecked(true);
 					else
 						favorite.setChecked(false);
+					isVisualize = false;
 				}
 				catch (Exception e) {
 					Log.e("Load", "Error loading settings");
 				}
 				
+			}
+		});
+		
+		favorite.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked && !isVisualize)
+				{
+					if(favCount >= 5)
+					{
+						Toast.makeText(getApplicationContext(), "Unable to add additional favorites", 15).show();
+						favorite.setChecked(false);
+					}
+				}
 			}
 		});
 		/*
@@ -216,6 +254,8 @@ public class MainActivity extends Activity {
 		    }
 		} */
 		
+		seekRinger.setEnabled(false);
+		seekRinger.setMax(7);
 		seekRinger.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -233,6 +273,8 @@ public class MainActivity extends Activity {
 			}
 		});
 		
+		seekMedia.setEnabled(false);
+		seekMedia.setMax(7);
 		seekMedia.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
@@ -327,7 +369,10 @@ public class MainActivity extends Activity {
 				vibrateCheckBox.setChecked(false);
 				silentCheckBox.setChecked(false);
 				rotateCheckBox.setChecked(false);
+				favorite.setChecked(false);
 				
+				//needs this to be above setting the text for obvious reasons
+				Toast.makeText(getApplicationContext(), "Profile " + settingName.getText().toString() + " deleted!", 15);
 				settingName.setText("");
 				
 				spinnerArray.clear();
@@ -339,6 +384,7 @@ public class MainActivity extends Activity {
 					}
 				}
 				settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
+				favCount--;
 			}
 		});
 		
@@ -421,6 +467,8 @@ public class MainActivity extends Activity {
 						}
 					}
 					settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
+					favCount++;
+					Toast.makeText(getApplicationContext(), "Profile " + settingName.getText().toString() + " created!", 15).show();
 				}
 				catch (Exception e)
 				{
@@ -439,17 +487,8 @@ public class MainActivity extends Activity {
 				WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 				String settings = "";
 				
-				//File file = new File(context.getFilesDir(), settingName.getText().toString());
-				//String temp_string = "testing 1 2 3";
-				//FileOutputStream output_stream;
 				try
 				{
-					//output_stream = openFileOutput(settingName.getText().toString(), context.MODE_PRIVATE);
-					//output_stream.write(temp_string.getBytes());
-					//output_stream.close();
-					
-					//AssetManager asset_manager = context.getAssets();
-					//InputStream input_stream = asset_manager.open(settingName.getText().toString());
 					FileInputStream input_stream = openFileInput(settingName.getText().toString());
 					InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
 					BufferedReader buffered_reader = new BufferedReader(input_stream_reader);
@@ -534,27 +573,13 @@ public class MainActivity extends Activity {
 					else
 						Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 1);
 					if (settings.substring(6,7).equals("1"))
-						audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(settings.substring(7,8)), 0);						
+						audiomanager.setStreamVolume(AudioManager.STREAM_MUSIC, Integer.parseInt(settings.substring(7,8)), 0);
+					Toast.makeText(getApplicationContext(), "Profile " + settingName.getText().toString() + " loaded!", 15).show();						
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
-				
-				/*
-				String filename = settingName.getText().toString();
-				FileOutputStream outputStream;
-				try
-				{
-					outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-					outputStream.write("hello".getBytes());
-					outputStream.close();
-				}
-				catch (Exception e)
-				{
-					
-				}
-				*/
 				
 				SharedPreferences sharedPref = getSharedPreferences("settings", 0);
 				SharedPreferences.Editor editor = sharedPref.edit();
