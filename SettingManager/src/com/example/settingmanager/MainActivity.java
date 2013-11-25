@@ -51,6 +51,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -89,6 +90,8 @@ public class MainActivity extends Activity {
 		final CheckBox favorite = (CheckBox) findViewById(R.id.checkFav);
 		
 		final ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+		
+		((ScrollView)findViewById(R.id.favoritesScroll)).setScrollbarFadingEnabled(false);
 		
 		createButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		loadButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));

@@ -34,17 +34,11 @@ public class FrontPage extends Activity {
 		final Button quick = (Button) findViewById(R.id.quick);
 		final Button editor = (Button) findViewById(R.id.editor);
 		
-		//TODO:
-		//add list of favorites limited to say, 5 profiles
-		//add favorite option in profiles
-		//test on tablet
-		//think about profile start on wifi connection
-		//graphics
-		
 		final LinearLayout favorites = (LinearLayout) findViewById(R.id.favoritesLayout);
 		final LayoutParams favParams = new LayoutParams(LayoutParams.MATCH_PARENT, 135);
 		int numFavs = 0;
 		
+		//!-------------------------Build favorites-------------------------!//
 		File[] files = getApplicationContext().getFilesDir().listFiles();
 		for (File file : files) {
 			if (!file.isDirectory()) {
@@ -175,6 +169,7 @@ public class FrontPage extends Activity {
 				catch(Exception e) { Log.d("Catch", "Failed to build favorites");}
 			}
 		}
+		//!-----------------------End build favorites-----------------------!//
 		
 		quick.setOnClickListener(new OnClickListener() {
 			
