@@ -29,34 +29,36 @@ public final class R {
         public static final int background=0x7f020000;
         public static final int bg=0x7f020001;
         public static final int ic_launcher=0x7f020002;
-        public static final int logo=0x7f020003;
+        public static final int launcher_icon=0x7f020003;
+        public static final int logo=0x7f020004;
     }
     public static final class id {
         public static final int Media=0x7f09000e;
-        public static final int back=0x7f090021;
-        public static final int bluetooth=0x7f09001c;
+        public static final int bluetooth=0x7f09001b;
         public static final int bottomBar=0x7f090002;
         public static final int checkFav=0x7f090004;
-        public static final int create=0x7f090020;
+        public static final int create=0x7f09001f;
         public static final int delete=0x7f090011;
         public static final int editor=0x7f090016;
-        public static final int favoritesLayout=0x7f090018;
         public static final int favoritesScroll=0x7f090001;
         public static final int favoritesText=0x7f090017;
         public static final int favsText=0x7f090003;
+        public static final int home=0x7f090020;
         public static final int imageView1=0x7f090014;
+        public static final int instant=0x7f090021;
         public static final int mainCreate=0x7f090012;
         public static final int mainLoad=0x7f090013;
         public static final int mediaText=0x7f09000f;
-        public static final int mobile=0x7f09001b;
+        public static final int mobile=0x7f09001a;
         public static final int name=0x7f090000;
+        public static final int profiles=0x7f090022;
         public static final int quick=0x7f090015;
-        public static final int ring=0x7f09001d;
+        public static final int ring=0x7f09001c;
         public static final int ringerText=0x7f09000c;
         public static final int seekMedia=0x7f090010;
         public static final int seekRinger=0x7f09000d;
-        public static final int settingsName=0x7f090019;
-        public static final int silent=0x7f09001f;
+        public static final int settingsName=0x7f090018;
+        public static final int silent=0x7f09001e;
         public static final int switchBluetooth=0x7f090006;
         public static final int switchMobile=0x7f090007;
         public static final int switchRing=0x7f09000b;
@@ -64,8 +66,8 @@ public final class R {
         public static final int switchSilent=0x7f09000a;
         public static final int switchVibrate=0x7f090009;
         public static final int switchWifi=0x7f090005;
-        public static final int vibrate=0x7f09001e;
-        public static final int wifi=0x7f09001a;
+        public static final int vibrate=0x7f09001d;
+        public static final int wifi=0x7f090019;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -77,6 +79,7 @@ public final class R {
         public static final int main=0x7f080000;
     }
     public static final class string {
+        public static final int SettingsManager=0x7f050003;
         public static final int action_settings=0x7f050001;
         public static final int app_name=0x7f050000;
         public static final int hello_world=0x7f050002;

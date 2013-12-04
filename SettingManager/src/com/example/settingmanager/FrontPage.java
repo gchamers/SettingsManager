@@ -34,8 +34,8 @@ public class FrontPage extends Activity {
 		final Button quick = (Button) findViewById(R.id.quick);
 		final Button editor = (Button) findViewById(R.id.editor);
 		
-		final LinearLayout favorites = (LinearLayout) findViewById(R.id.favoritesLayout);
-		final LayoutParams favParams = new LayoutParams(LayoutParams.MATCH_PARENT, 135);
+		final LinearLayout favorites = (LinearLayout) findViewById(R.id.favoritesScroll);
+		final LayoutParams favParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
 		int numFavs = 0;
 		
 		//!-------------------------Build favorites-------------------------!//

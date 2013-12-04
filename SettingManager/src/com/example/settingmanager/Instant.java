@@ -121,14 +121,14 @@ public class Instant extends Activity {
 					}
 					else
 					{
-						Toast.makeText(getApplicationContext(), "" + userChangeVib, 5).show();
+						
+						seekRinger.setEnabled(false);
+						seekRinger.setProgress(0);
+						ringerText.setText("Ring Volume");
 						if(!userChangeVib)
 							audiomanager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 						else
 							userChangeVib = false;
-						seekRinger.setEnabled(false);
-						seekRinger.setProgress(0);
-						ringerText.setText("Ring Volume");
 					}
 				}
 			}
@@ -228,64 +228,72 @@ public class Instant extends Activity {
 		});
 		
 		//!--------------------visualize current settings--------------------!
-				visualize = true;
-				//bluetooth
-				if(blueTooth.isEnabled())
-					blueToothCheckBox.setChecked(true);
-				//wifi
-				if(wifi.isWifiEnabled())
-					wifiCheckBox.setChecked(true);
-				//mobile data
-				//TODO: This isn't working
-				boolean mobileDataEnabled = false;
-			    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-			    try {
-			        Class cmClass = Class.forName(cm.getClass().getName());
-			        Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
-			        method.setAccessible(true); 
-			        mobileDataEnabled = (Boolean)method.invoke(cm);
-			    } catch (Exception e) {}
-				if(mobileDataEnabled)
-					mobileNetworkCheckBox.setChecked(true);
-				//ringer
-				if(audiomanager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
-				{
-					ringCheckBox.setChecked(true);
-					seekRinger.setEnabled(true);
-					seekRinger.setProgress(audiomanager.getStreamVolume(AudioManager.STREAM_RING));
-					//ringerText.setText("Ringer Volume = " + seekRinger.getProgress());
-				}
-				//vibrate
-				else if(audiomanager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE)
-					vibrateCheckBox.setChecked(true);
-				//rotate
-				if (android.provider.Settings.System.getInt(getContentResolver(),Settings.System.ACCELEROMETER_ROTATION, 0) == 1)
-					rotateCheckBox.setChecked(true);
-				//media
-				if(audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC) != 0)
-				{
-					mediaSwitch.setChecked(true);
-					seekMedia.setEnabled(true);
-					seekMedia.setProgress(audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC));
-					//mediaText.setText("Media Volume = " + seekMedia.getProgress());
-				}
-			    visualize = false;
-				//!--------------------end visualize--------------------!
+		visualize = true;
+		//bluetooth
+		if(blueTooth.isEnabled())
+			blueToothCheckBox.setChecked(true);
+		//wifi
+		if(wifi.isWifiEnabled())
+			wifiCheckBox.setChecked(true);
+		//mobile data
+		//TODO: This isn't working
+		boolean mobileDataEnabled = false;
+	    ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    try {
+	        Class cmClass = Class.forName(cm.getClass().getName());
+	        Method method = cmClass.getDeclaredMethod("getMobileDataEnabled");
+	        method.setAccessible(true); 
+	        mobileDataEnabled = (Boolean)method.invoke(cm);
+	    } catch (Exception e) {}
+		if(mobileDataEnabled)
+			mobileNetworkCheckBox.setChecked(true);
+		//ringer
+		if(audiomanager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL)
+		{
+			ringCheckBox.setChecked(true);
+			seekRinger.setEnabled(true);
+			seekRinger.setProgress(audiomanager.getStreamVolume(AudioManager.STREAM_RING));
+			//ringerText.setText("Ringer Volume = " + seekRinger.getProgress());
+		}
+		//vibrate
+		else if(audiomanager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE)
+			vibrateCheckBox.setChecked(true);
+		//rotate
+		if (android.provider.Settings.System.getInt(getContentResolver(),Settings.System.ACCELEROMETER_ROTATION, 0) == 1)
+			rotateCheckBox.setChecked(true);
+		//media
+		if(audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC) != 0)
+		{
+			mediaSwitch.setChecked(true);
+			seekMedia.setEnabled(true);
+			seekMedia.setProgress(audiomanager.getStreamVolume(AudioManager.STREAM_MUSIC));
+			//mediaText.setText("Media Volume = " + seekMedia.getProgress());
+		}
+	    visualize = false;
+		//!--------------------end visualize--------------------!
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem item = menu.findItem(R.id.instant);
+		item.setVisible(false);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
+		Intent i;
 		switch(item.getItemId())
 		{
-			case R.id.back:
-				Intent i = new Intent(getApplicationContext(), FrontPage.class);
+			case R.id.home:
+				i = new Intent(getApplicationContext(), FrontPage.class);
+				startActivity(i);
+				finish();
+				break;
+			case R.id.profiles:
+				i = new Intent(getApplicationContext(), MainActivity.class);
 				startActivity(i);
 				finish();
 				break;

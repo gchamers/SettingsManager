@@ -601,15 +601,23 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem item = menu.findItem(R.id.profiles);
+		item.setVisible(false);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
+		Intent i;
 		switch(item.getItemId())
 		{
-			case R.id.back:
-				Intent i = new Intent(getApplicationContext(), FrontPage.class);
+			case R.id.home:
+				i = new Intent(getApplicationContext(), FrontPage.class);
+				startActivity(i);
+				finish();
+				break;
+			case R.id.instant:
+				i = new Intent(getApplicationContext(), Instant.class);
 				startActivity(i);
 				finish();
 				break;
