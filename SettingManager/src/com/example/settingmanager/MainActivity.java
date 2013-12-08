@@ -61,8 +61,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-	int ringVol = 0, mediaVol = 0, favCount = 0;
+	int ringVol = 0, mediaVol = 0;
 	boolean isVisualize = false;
+	ArrayList<String> favList = new ArrayList<String>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +98,14 @@ public class MainActivity extends Activity {
 		loadButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		deleteButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		
+		favList = this.getIntent().getStringArrayListExtra("favs");
+		
 		File[] files = context.getFilesDir().listFiles();
 		for (File file : files) {
 			if (!file.isDirectory()) {
 				spinnerArray.add(file.getName());
-				try {
+				
+				/*try {
 					FileInputStream input_stream = openFileInput(file.getName());
 					InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
 					BufferedReader buffered_reader = new BufferedReader(input_stream_reader);
@@ -115,7 +119,7 @@ public class MainActivity extends Activity {
 					String settings = string_builder.toString();
 					if(settings.substring(8, 9).equals("1"))
 						favCount++;
-				} catch (Exception e) {}
+				} catch (Exception e) {}*/
 				
 				Log.d("File", file.getName());
 			}
@@ -232,7 +236,7 @@ public class MainActivity extends Activity {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if(isChecked && !isVisualize)
 				{
-					if(favCount >= 5)
+					if(favList.size() >= 5)
 					{
 						Toast.makeText(getApplicationContext(), "Unable to add additional favorites", 15).show();
 						favorite.setChecked(false);
@@ -376,6 +380,7 @@ public class MainActivity extends Activity {
 				
 				//needs this to be above setting the text for obvious reasons
 				Toast.makeText(getApplicationContext(), "Profile " + settingName.getText().toString() + " deleted!", 15);
+				favList.remove(settingName.getText().toString());
 				settingName.setText("");
 				
 				spinnerArray.clear();
@@ -387,7 +392,6 @@ public class MainActivity extends Activity {
 					}
 				}
 				settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
-				favCount--;
 			}
 		});
 		
@@ -470,7 +474,16 @@ public class MainActivity extends Activity {
 						}
 					}
 					settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
-					favCount++;
+					boolean found = false;
+					for(String fav : favList)
+						if(fav.equals(settingName.getText().toString()))
+							found = true;
+					//if fav is checked and we haven't already saved this as a favorite
+					if(favorite.isChecked() && !found)
+						favList.add(settingName.getText().toString());
+					//conversely, if it was a favorite and no longer is
+					if(!favorite.isChecked() && found)
+						favList.remove(settingName.getText().toString());
 					Toast.makeText(getApplicationContext(), "Profile " + settingName.getText().toString() + " created!", 15).show();
 				}
 				catch (Exception e)
@@ -618,6 +631,7 @@ public class MainActivity extends Activity {
 				break;
 			case R.id.instant:
 				i = new Intent(getApplicationContext(), Instant.class);
+				i.putStringArrayListExtra("favs", favList);
 				startActivity(i);
 				finish();
 				break;

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.ActionBar.LayoutParams;
@@ -26,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class FrontPage extends Activity {
+	ArrayList<String> favList = new ArrayList<String>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,6 +59,7 @@ public class FrontPage extends Activity {
 					if(!settings.substring(8, 9).equals("1") || numFavs > 4)
 						continue;
 					Log.d("FrontPage", "Favorite found!");
+					favList.add(file.getName());
 					final Button fav = new Button(this);
 					fav.setText(file.getName());
 					fav.setOnClickListener(new OnClickListener() {
@@ -177,6 +180,7 @@ public class FrontPage extends Activity {
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(), Instant.class);
 				i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				i.putStringArrayListExtra("favs", favList);
 				startActivity(i);
 				finish();
 			}
@@ -188,6 +192,7 @@ public class FrontPage extends Activity {
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(), MainActivity.class);
 				i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+				i.putStringArrayListExtra("favs", favList);
 				startActivity(i);
 				finish();
 			}

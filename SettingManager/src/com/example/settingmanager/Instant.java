@@ -293,7 +293,9 @@ public class Instant extends Activity {
 				finish();
 				break;
 			case R.id.profiles:
+				ArrayList<String> favList = this.getIntent().getStringArrayListExtra("favs");
 				i = new Intent(getApplicationContext(), MainActivity.class);
+				i.putStringArrayListExtra("favs", favList);
 				startActivity(i);
 				finish();
 				break;
