@@ -102,27 +102,8 @@ public class MainActivity extends Activity {
 		
 		File[] files = context.getFilesDir().listFiles();
 		for (File file : files) {
-			if (!file.isDirectory()) {
+			if (!file.isDirectory())
 				spinnerArray.add(file.getName());
-				
-				/*try {
-					FileInputStream input_stream = openFileInput(file.getName());
-					InputStreamReader input_stream_reader = new InputStreamReader(input_stream);
-					BufferedReader buffered_reader = new BufferedReader(input_stream_reader);
-					String received = "";
-					StringBuilder string_builder = new StringBuilder();
-					while ((received = buffered_reader.readLine()) != null)
-					{
-						string_builder.append(received);
-					}
-					input_stream.close();
-					String settings = string_builder.toString();
-					if(settings.substring(8, 9).equals("1"))
-						favCount++;
-				} catch (Exception e) {}*/
-				
-				Log.d("File", file.getName());
-			}
 		}
 		settingName.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, spinnerArray));
 		settingName.setThreshold(0);
@@ -244,22 +225,6 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		/*
-		File f = new File(Environment.getExternalStorageDirectory(), "1.jpg");
-		String path = f.getAbsolutePath();
-		File f1 = new File(path);
-
-		if(f1.exists()) {
-		    Bitmap bmp = BitmapFactory.decodeFile(path);
-		    BitmapDrawable bitmapDrawable = new BitmapDrawable(bmp);
-		    WallpaperManager m=WallpaperManager.getInstance(this);
-
-		    try {
-		        m.setBitmap(bmp);
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-		} */
 		
 		seekRinger.setEnabled(false);
 		seekRinger.setMax(7);

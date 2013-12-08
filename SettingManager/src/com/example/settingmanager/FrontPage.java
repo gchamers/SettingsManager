@@ -8,11 +8,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActionBar.LayoutParams;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
@@ -20,6 +24,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,6 +33,7 @@ import android.widget.Toast;
 
 public class FrontPage extends Activity {
 	ArrayList<String> favList = new ArrayList<String>();
+	@SuppressLint("ResourceAsColor")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +45,9 @@ public class FrontPage extends Activity {
 		final LinearLayout favorites = (LinearLayout) findViewById(R.id.favoritesScroll);
 		final LayoutParams favParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1);
 		int numFavs = 0;
+		
+		quick.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		editor.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		
 		//!-------------------------Build favorites-------------------------!//
 		File[] files = getApplicationContext().getFilesDir().listFiles();
@@ -62,6 +71,8 @@ public class FrontPage extends Activity {
 					favList.add(file.getName());
 					final Button fav = new Button(this);
 					fav.setText(file.getName());
+					fav.setTextColor(Color.WHITE);
+					fav.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 					fav.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -203,6 +214,12 @@ public class FrontPage extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem item = menu.findItem(R.id.profiles);
+		item.setVisible(false);
+		MenuItem item1 = menu.findItem(R.id.instant);
+		item1.setVisible(false);
+		MenuItem item2 = menu.findItem(R.id.home);
+		item2.setVisible(false);
 		return true;
 	}
 }

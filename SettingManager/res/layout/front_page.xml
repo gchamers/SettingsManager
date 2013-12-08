@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:context=".FrontPage" >
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo" 
         android:layout_centerHorizontal="true"
-        android:paddingTop="20dp"/>
+        android:paddingTop="20dp"
+        android:src="@drawable/logo" />
 
     <Button
         android:id="@+id/quick"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Instant Changes" 
-        android:layout_above="@+id/editor"/>
+        android:layout_above="@+id/editor"
+        android:textColor="@color/white"
+        android:text="Instant Changes" />
 
     <Button
         android:id="@+id/editor"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Profiles" 
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:text="Profiles"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/favoritesText"
@@ -38,7 +42,6 @@
 
     <LinearLayout
         android:id="@+id/favoritesScroll"
-        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/quick"
@@ -47,8 +50,9 @@
         android:layout_below="@+id/favoritesText"
         android:layout_marginBottom="30dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp" 
-        android:weightSum="5">
+        android:layout_marginRight="30dp"
+        android:orientation="vertical"
+        android:weightSum="5" >
     </LinearLayout>
 
 </RelativeLayout>
