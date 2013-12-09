@@ -1,4 +1,4 @@
-package com.example.settingmanager;
+package com.settingmanager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -15,17 +15,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
+import com.settingmanager.R;
 
 //airplane mode
 

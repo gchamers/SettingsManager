@@ -1,5 +1,5 @@
 /** Automatically generated file. DO NOT MODIFY */
-package com.example.settingmanager;
+package com.settingmanager;
 
 public final class BuildConfig {
     public final static boolean DEBUG = true;

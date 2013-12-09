@@ -1,4 +1,4 @@
-package com.example.settingmanager;
+package com.settingmanager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,6 @@ import android.app.ActionBar.LayoutParams;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
 import android.media.AudioManager;
@@ -30,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import com.settingmanager.R;
 
 public class FrontPage extends Activity {
 	ArrayList<String> favList = new ArrayList<String>();

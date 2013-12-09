@@ -1,42 +1,30 @@
-package com.example.settingmanager;
+package com.settingmanager;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import com.example.settingmanager.MainActivity;
+import com.settingmanager.MainActivity;
+import com.settingmanager.R;
 
 import android.media.AudioManager;
-import android.media.MediaRouter.VolumeCallback;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.WallpaperManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.AvoidXfermode.Mode;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
-import android.graphics.drawable.BitmapDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,18 +32,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -97,6 +82,9 @@ public class MainActivity extends Activity {
 		createButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		loadButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
 		deleteButton.getBackground().setColorFilter(new LightingColorFilter(0x141414, 0x2a2a2a));
+		
+		settingName.setDropDownBackgroundResource(R.drawable.ddbg);
+		settingName.setBackgroundResource(R.drawable.tbbg);
 		
 		favList = this.getIntent().getStringArrayListExtra("favs");
 		
